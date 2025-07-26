@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 
@@ -11,7 +11,11 @@ export const metadata: Metadata = {
     "Plan your perfect journey with intelligent waypoint optimization, real-time traffic data, and seamless mobile experience.",
   keywords: "route optimization, navigation, waypoints, Google Maps, mobile-first",
   authors: [{ name: "Route Optimizer Team" }],
-  viewport: "width=device-width, initial-scale=1",
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#1f2937" },
