@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { X, Plus, MapPin } from "lucide-react"
 import type { Waypoint } from "@/app/optimize/page"
-import type { google } from "google-maps"
 
 declare global {
   interface Window {
@@ -41,6 +40,7 @@ export function LocationInputPanel({
   const originRef = useRef<HTMLInputElement>(null)
   const destinationRef = useRef<HTMLInputElement>(null)
   const waypointRefs = useRef<(HTMLInputElement | null)[]>([])
+  const autocompleteRefs = useRef<google.maps.places.Autocomplete[]>([])
 
   // Initialize Google Places Autocomplete
   useEffect(() => {
@@ -59,6 +59,13 @@ export function LocationInputPanel({
       }
 
       try {
+        autocompleteRefs.current.forEach(autocomplete => {
+          if (autocomplete) {
+            google.maps.event.clearInstanceListeners(autocomplete)
+          }
+        })
+        autocompleteRefs.current = []
+
         // Origin autocomplete
         if (originRef.current) {
           const autocomplete = new window.google.maps.places.Autocomplete(originRef.current)
@@ -95,10 +102,11 @@ export function LocationInputPanel({
           })
         }
 
-        // Waypoint autocompletes
+        // Waypoint autocompletes - reinitialize all
         waypointRefs.current.forEach((ref, index) => {
           if (ref) {
             const autocomplete = new window.google.maps.places.Autocomplete(ref)
+            autocompleteRefs.current[index] = autocomplete
             autocomplete.addListener("place_changed", () => {
               const place = autocomplete.getPlace()
               if (place.geometry?.location) {
@@ -124,7 +132,7 @@ export function LocationInputPanel({
     }
 
     initAutocomplete()
-  }, [waypoints, onOriginChange, onDestinationChange, onAddWaypoint])
+  }, [waypoints, waypointInputs.length, onOriginChange, onDestinationChange, onAddWaypoint])
 
   const addWaypointInput = () => {
     setWaypointInputs([...waypointInputs, ""])
