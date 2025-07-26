@@ -18,8 +18,8 @@ A mobile-first route optimization application built with Next.js, Tailwind CSS, 
 ### 1. Clone and Install
 
 \`\`\`bash
-git clone <your-repo-url>
-cd route-optimizer-mvp
+git clone <https://github.com/jasminaaa20/smart-route.git>
+cd smart-route
 npm install
 \`\`\`
 
@@ -109,11 +109,13 @@ After deployment, update your Google Maps API key restrictions to include your V
 ## Usage
 
 ### Landing Page
+
 - Clean hero section explaining the app
 - Feature highlights with icons
 - Call-to-action button to start optimizing
 
 ### Route Optimizer
+
 - **Origin**: Required starting point
 - **Waypoints**: Add multiple stops (via input or map clicks)
 - **Destination**: Optional end point (defaults to origin for round trips)
@@ -121,6 +123,7 @@ After deployment, update your Google Maps API key restrictions to include your V
 - **Start Journey**: Opens optimized route in Google Maps app
 
 ### Mobile Experience
+
 - Collapsible input panel to maximize map view
 - Large touch targets for easy interaction
 - Responsive design for all screen sizes
