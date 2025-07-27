@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { RouteOptimizerMap } from "@/components/route-optimizer-map"
 import { LocationInputPanel } from "@/components/location-input-panel"
 import { RouteResults } from "@/components/route-results"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -32,7 +31,6 @@ export default function OptimizePage() {
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(false)
   const [showFirstTimeModal, setShowFirstTimeModal] = useState(false)
 
-  // Check for first-time user
   useEffect(() => {
     const hasVisited = localStorage.getItem("hasVisitedOptimizer")
     if (!hasVisited) {
@@ -40,7 +38,6 @@ export default function OptimizePage() {
       localStorage.setItem("hasVisitedOptimizer", "true")
     }
 
-    // Load saved data
     const savedData = localStorage.getItem("routeOptimizerData")
     if (savedData) {
       try {
@@ -54,7 +51,6 @@ export default function OptimizePage() {
     }
   }, [])
 
-  // Save data to localStorage
   useEffect(() => {
     const dataToSave = { origin, destination, waypoints }
     localStorage.setItem("routeOptimizerData", JSON.stringify(dataToSave))
@@ -78,21 +74,27 @@ export default function OptimizePage() {
     setError(null)
 
     try {
-      // Simulate API call - replace with actual Google Routes API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      const res = await fetch("/api/compute-route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ origin, destination, waypoints }),
+      })
 
-      // Mock route data
-      const mockRouteData: RouteData = {
-        distance: "45.2 km",
-        duration: "52 mins",
-        polyline: "mock_polyline_data",
-        optimizedOrder: waypoints.map((_, index) => index),
-      }
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || "Request failed")
 
-      setRouteData(mockRouteData)
-    } catch (err) {
-      setError("Failed to optimize route. Please try again.")
-    } finally {
+      const route = json.routes[0]
+      const optimizedOrder: number[] = route.optimizedIntermediateWaypointIndex || []
+
+      setRouteData({
+        distance: `${(route.distanceMeters / 1000).toFixed(1)} km`,
+        duration: `${Math.round(route.duration.seconds / 60)} mins`,
+        polyline: route.polyline.encodedPolyline,
+        optimizedOrder,
+      })
+    } catch (err: any) {
+        setError(`Failed to optimize route: ${err.message || "Unknown error"}`)
+      } finally {
       setIsLoading(false)
     }
   }
@@ -100,11 +102,14 @@ export default function OptimizePage() {
   const startJourney = () => {
     if (!origin) return
 
-    // Create Google Maps URL
+    // Reorder waypoints based on optimization
+    const orderedWaypoints =
+      routeData?.optimizedOrder.map((i) => waypoints[i]) || waypoints
+
     let url = `https://www.google.com/maps/dir/${origin.lat},${origin.lng}`
 
-    waypoints.forEach((waypoint) => {
-      url += `/${waypoint.lat},${waypoint.lng}`
+    orderedWaypoints.forEach((wp) => {
+      url += `/${wp.lat},${wp.lng}`
     })
 
     if (destination) {
@@ -116,47 +121,20 @@ export default function OptimizePage() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
         <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Route Optimizer</h1>
         <ThemeToggle />
       </header>
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col lg:flex-row relative">
-        {/* Map Container */}
-        <div className="flex-1 relative">
-          <RouteOptimizerMap
-            origin={origin}
-            destination={destination}
-            waypoints={waypoints}
-            routeData={routeData}
-            onMapClick={(lat, lng, address) => {
-              const newWaypoint: Waypoint = {
-                id: Date.now().toString(),
-                address,
-                lat,
-                lng,
-              }
-              if (!origin) {
-                setOrigin(newWaypoint)
-              } else {
-                addWaypoint(newWaypoint)
-              }
-            }}
-          />
-        </div>
-
-        {/* Input Panel */}
         <div
           className={`
-          lg:w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700
+          w-full lg:w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700
           lg:relative absolute bottom-0 left-0 right-0 z-10
           transition-transform duration-300 ease-in-out
           ${isPanelCollapsed ? "translate-y-[calc(100%-3rem)]" : "translate-y-0"}
         `}
         >
-          {/* Panel Toggle (Mobile) */}
           <Button
             variant="ghost"
             size="sm"
@@ -193,14 +171,13 @@ export default function OptimizePage() {
         </div>
       </div>
 
-      {/* First Time User Modal */}
       {showFirstTimeModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
             <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Welcome to Route Optimizer!</h2>
             <div className="space-y-3 text-gray-600 dark:text-gray-300">
               <p>• Enter your starting location in the Origin field</p>
-              <p>• Add waypoints by typing addresses or tapping the map</p>
+              <p>• Add waypoints by typing addresses</p>
               <p>• Click "Optimize Route" to find the best path</p>
               <p>• Use "Start Journey" to open in Google Maps</p>
             </div>
