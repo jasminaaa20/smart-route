@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react"
 import type { Waypoint, RouteData } from "@/app/optimize/page"
-import type { google } from "googlemaps"
 
 interface RouteOptimizerMapProps {
   origin: Waypoint | null
@@ -32,10 +31,16 @@ export function RouteOptimizerMap({ origin, destination, waypoints, routeData, o
       if (!mapRef.current) return
 
       try {
+        // Check if API key exists
+        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+        if (!apiKey) {
+          throw new Error("Google Maps API key is missing")
+        }
+
         // Load Google Maps API
         const { Loader } = await import("@googlemaps/js-api-loader")
         const loader = new Loader({
-          apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+          apiKey,
           version: "weekly",
           libraries: ["places", "geometry"],
         })
@@ -91,7 +96,7 @@ export function RouteOptimizerMap({ origin, destination, waypoints, routeData, o
         })
       } catch (error) {
         console.error("Failed to load Google Maps:", error)
-        setError("Failed to load Google Maps. Please check your API key.")
+        setError(`Failed to load Google Maps: ${error instanceof Error ? error.message : 'Unknown error'}`)
         setIsLoading(false)
       }
     }
