@@ -23,6 +23,36 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Demo Video Section */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="text-center max-w-4xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            See It In Action
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+            Watch how easy it is to optimize your routes with our mobile-friendly interface
+          </p>
+          <div className="relative rounded-lg overflow-hidden shadow-2xl bg-gray-900">
+            <video
+              className="w-full aspect-video"
+              controls
+              poster="https://via.placeholder.com/1280x720/1e40af/ffffff?text=Route+Optimizer+Demo"
+            >
+              <source
+                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                type="video/mp4"
+              />
+              <source
+                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.webm"
+                type="video/webm"
+              />
+              Your browser does not support the video tag.
+            </video>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -64,7 +94,7 @@ export default function HomePage() {
       <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Route Optimizer MVP</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Route Optimizer</h3>
             <p className="text-gray-600 dark:text-gray-300">
               © {new Date().getFullYear()} Route Optimizer. Built with Next.js and Google Maps.
             </p>
