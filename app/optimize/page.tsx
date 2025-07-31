@@ -19,6 +19,12 @@ export interface RouteData {
   duration: string
   polyline: string
   optimizedOrder: number[]
+  stepByStepDirections?: {
+    instruction: string
+    distance: number
+    duration: string
+    maneuver: string
+  }[]
 }
 
 export default function OptimizePage() {
@@ -86,11 +92,17 @@ export default function OptimizePage() {
       const route = json.routes[0]
       const optimizedOrder: number[] = route.optimizedIntermediateWaypointIndex || []
 
+      // Parse duration from the string format (e.g., "1234s" -> 1234 seconds)
+      const durationInSeconds = route.duration ? 
+        parseFloat(route.duration.replace('s', '')) : 
+        (route.staticDuration ? parseFloat(route.staticDuration.replace('s', '')) : 0)
+
       setRouteData({
         distance: `${(route.distanceMeters / 1000).toFixed(1)} km`,
-        duration: `${Math.round(route.duration.seconds / 60)} mins`,
+        duration: `${Math.round(durationInSeconds / 60)} mins`,
         polyline: route.polyline.encodedPolyline,
         optimizedOrder,
+        stepByStepDirections: route.stepByStepDirections || [],
       })
     } catch (err: any) {
         setError(`Failed to optimize route: ${err.message || "Unknown error"}`)
@@ -120,16 +132,16 @@ export default function OptimizePage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Route Optimizer</h1>
+    <div className="h-screen flex flex-col">
+      <header className="border-b p-4 flex justify-between items-center">
+        <h1 className="text-xl font-semibold">Route Optimizer</h1>
         <ThemeToggle />
       </header>
 
       <div className="flex-1 flex flex-col lg:flex-row relative">
         <div
           className={`
-          w-full lg:w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700
+          w-full lg:w-96 border-l
           lg:relative absolute bottom-0 left-0 right-0 z-10
           transition-transform duration-300 ease-in-out
           ${isPanelCollapsed ? "translate-y-[calc(100%-3rem)]" : "translate-y-0"}
@@ -138,7 +150,7 @@ export default function OptimizePage() {
           <Button
             variant="ghost"
             size="sm"
-            className="lg:hidden w-full py-2 border-b border-gray-200 dark:border-gray-700"
+            className="lg:hidden w-full py-2 border-b"
             onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
           >
             {isPanelCollapsed ? <ChevronUp /> : <ChevronDown />}
@@ -157,8 +169,8 @@ export default function OptimizePage() {
             />
 
             {error && (
-              <div className="p-3 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 rounded-md">
-                <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+              <div className="p-3 rounded-md">
+                <p className="text-sm">{error}</p>
               </div>
             )}
 
@@ -172,10 +184,10 @@ export default function OptimizePage() {
       </div>
 
       {showFirstTimeModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Welcome to Route Optimizer!</h2>
-            <div className="space-y-3 text-gray-600 dark:text-gray-300">
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="rounded-lg p-6 max-w-md w-full">
+            <h2 className="text-xl font-semibold mb-4">Welcome to Route Optimizer!</h2>
+            <div className="space-y-3">
               <p>• Enter your starting location in the Origin field</p>
               <p>• Add waypoints by typing addresses</p>
               <p>• Click "Optimize Route" to find the best path</p>
