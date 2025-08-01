@@ -132,7 +132,7 @@ export default function OptimizePage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       <header className="border-b p-4 flex justify-between items-center">
         <h1 className="text-xl font-semibold">Route Optimizer</h1>
         <ThemeToggle />
