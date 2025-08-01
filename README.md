@@ -18,7 +18,7 @@ A mobile-first route optimization application built with Next.js, Tailwind CSS, 
 ### 1. Clone and Install
 
 ```bash
-git clone <https://github.com/jasminaaa20/smart-route.git>
+git clone https://github.com/jasminaaa20/smart-route.git
 cd smart-route
 npm install
 ```
