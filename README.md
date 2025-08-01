@@ -17,11 +17,11 @@ A mobile-first route optimization application built with Next.js, Tailwind CSS, 
 
 ### 1. Clone and Install
 
-\`\`\`bash
+```bash
 git clone <https://github.com/jasminaaa20/smart-route.git>
 cd smart-route
 npm install
-\`\`\`
+```
 
 ### 2. Google Maps API Setup
 
@@ -37,34 +37,34 @@ npm install
 
 ### 3. Environment Variables
 
-\`\`\`bash
+```bash
 cp .env.example .env.local
-\`\`\`
+```
 
 Add your Google Maps API key to `.env.local`:
 
-\`\`\`
+```bash
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_actual_api_key_here
-\`\`\`
+```
 
 ### 4. Install shadcn/ui Components
 
-\`\`\`bash
+```bash
 npx shadcn@latest init
 npx shadcn@latest add button card input label collapsible
-\`\`\`
+```
 
 ### 5. Run Development Server
 
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 Visit `http://localhost:3000` to see the application.
 
 ## Project Structure
 
-\`\`\`
+```txt
 route-optimizer-mvp/
 ├── app/
 │   ├── page.tsx              # Landing page
@@ -82,17 +82,21 @@ route-optimizer-mvp/
 ├── tailwind.config.js            # Tailwind configuration
 ├── next.config.js                # Next.js configuration
 └── package.json                  # Dependencies
-\`\`\`
+```
 
 ## Deployment on Vercel
 
 ### 1. Push to GitHub
 
-\`\`\`bash
+```bash
 git add .
 git commit -m "Initial commit"
 git push origin main
-\`\`\`
+```bash
+git add .
+git commit -m "Initial commit"
+git push origin main
+```
 
 ### 2. Deploy to Vercel
 
